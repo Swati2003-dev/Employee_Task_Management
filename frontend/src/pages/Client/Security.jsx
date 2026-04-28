@@ -11,9 +11,39 @@ const Security = () => {
     const [showNew, setShowNew] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert("Password updated successfully!");
+        
+        if (passwords.new !== passwords.confirm) {
+            alert("New passwords do not match!");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost:3000/api/auth/update-password", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    currentPassword: passwords.current,
+                    newPassword: passwords.new
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert("Password updated successfully!");
+                setPasswords({ current: "", new: "", confirm: "" });
+            } else {
+                alert(data.message || "Failed to update password");
+            }
+        } catch (error) {
+            console.error("Error updating password:", error);
+            alert("An error occurred. Please try again.");
+        }
     };
 
     return (

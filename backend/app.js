@@ -18,4 +18,13 @@ app.get("/", (req, res) =>{
 })
 
 
-export default app;
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error("🔥 Global Error Handler:", err.stack);
+    res.status(500).json({
+        message: "An internal server error occurred",
+        error: process.env.NODE_ENV === "development" ? err.message : undefined
+    });
+});
+
+export default app;

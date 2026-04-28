@@ -287,13 +287,47 @@ const initialClients = [
 
 const Client = () => {
   const navigate = useNavigate();
-  const [clients, setClients] = useState(initialClients);
+  const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
-  // const [showProfileModal, setShowProfileModal] = useState(false);
-  // const [selectedClientProfile, setSelectedClientProfile] = useState(null);
+
+  // Fetch Clients from Backend
+  const fetchClients = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/users", {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const data = await response.json();
+      
+      if (Array.isArray(data)) {
+        // Filter only CLIENTS for this page
+        const mappedData = data
+          .filter(u => u && u.role === 'CLIENT')
+          .map(u => ({
+            ...u,
+            id: u._id,
+            clientId: u.userId
+          }));
+        setClients(mappedData);
+      } else {
+        console.error("Backend did not return an array:", data);
+        setClients([]);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchClients();
+  }, []);
   const [formData, setFormData] = useState({
     clientId: "",
     name: "",
@@ -314,9 +348,9 @@ const Client = () => {
 
   const filteredClients = clients.filter(
     (client) =>
-      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.email.toLowerCase().includes(searchTerm.toLowerCase())
+      (client.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (client.company?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (client.email?.toLowerCase() || "").includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
@@ -403,34 +437,50 @@ const Client = () => {
   };
 
 
-  const handleSave = () => {
-    if (!formData.name || !formData.email || !formData.company || !formData.mobile) return;
-
-    if (editingClient) {
-      setClients((prev) =>
-        prev.map((c) =>
-          c.id === editingClient.id
-            ? {
-              ...c,
-              ...formData,
-              contractDocument: formData.contractDocument || null,
-            }
-            : c
-        )
-      );
-    } else {
-      const newId = Math.max(0, ...clients.map((c) => c.id)) + 1;
-      // const newAvatar = `https://i.pravatar.cc/150?u=${newId}`;
-      setClients((prev) => [
-        ...prev,
-        {
-          id: newId,
-          // avatar: newAvatar,
-          ...formData,
-        },
-      ]);
+  const handleSave = async () => {
+    if (!formData.name || !formData.email || !formData.clientId) {
+      alert("Name, Email and Client ID are required");
+      return;
     }
-    setShowModal(false);
+
+    try {
+      if (editingClient) {
+        // Update logic (to be implemented on backend)
+        setClients((prev) =>
+          prev.map((c) =>
+            c._id === editingClient._id ? { ...c, ...formData } : c
+          )
+        );
+      } else {
+        // Create New Client via API
+        const response = await fetch("http://localhost:3000/api/users/create-user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            userId: formData.clientId,
+            role: "CLIENT"
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert("Client created successfully! Email with credentials simulated in console.");
+          fetchClients(); // Refresh list
+        } else {
+          alert(data.message || "Failed to create client");
+        }
+      }
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error saving client:", error);
+      alert("Error saving client");
+    }
   };
 
   const handleViewDocument = (doc) => {
@@ -534,7 +584,13 @@ const Client = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentItems.length > 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan={14} className="px-4 py-8 text-center text-slate-500 italic">
+                      Loading clients...
+                    </td>
+                  </tr>
+                ) : currentItems.length > 0 ? (
                   currentItems.map((client) => (
                     <tr
                       key={client.id}
@@ -616,9 +672,9 @@ const Client = () => {
                           <span className="text-indigo-500">
                             <MapPinIcon />
                           </span>
-                          {client.address.length > 18
+                          {client.address && client.address.length > 18
                             ? client.address.substring(0, 15) + "..."
-                            : client.address}
+                            : client.address || "N/A"}
                         </div>
                       </td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>

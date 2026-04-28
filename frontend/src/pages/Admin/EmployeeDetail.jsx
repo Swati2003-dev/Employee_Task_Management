@@ -521,195 +521,43 @@ const AddEmployeeForm = ({ onClose, onSave, initialData }) => {
 const EmployeeDetail = () => {
     const location = useLocation();
     const [view, setView] = useState("list");
-    const [employees, setEmployees] = useState([
-        {
-            id: 1,
-            firstName: "John",
-            lastName: "Doe",
-            employeeId: "0001",
-            role: "Software Engineer",
-            dept: "Engineering",
-            joiningDate: "15/01/2022",
-            gender: "Male",
-            mobile: "9876543210",
-            email: "john.doe@company.com",
-            presentAddressLine: "123 Main St", presentCity: "City", presentState: "State", presentZipCode: "12345",
-            permanentAddressLine: "123 Main St", permanentCity: "City", permanentState: "State", permanentZipCode: "12345",
-            status: "Active",
-            employeeType: "Full Time",
-            aadharCard: "123456789012",
-            panCard: "ABCDE1234F",
-            bankName: "SBI",
-            accountNumber: "1234567890",
-            ifscCode: "SBIN0001234",
-            projects: [
-                { name: "Alpha", status: "In Progress", role: "Developer" },
-                { name: "Beta", status: "Completed", role: "Lead" }
-            ],
-            leaves: {
-                total: 24, taken: 4, balance: 20, sick: 2, casual: 1, privilege: 1
-            },
-            experiences: [
-                { companyName: "Tech Solutions Inc.", designation: "Junior Developer", years: "1", months: "6" },
-                { companyName: "WebCorp", designation: "Intern", years: "0", months: "6" }
-            ]
-        },
-        {
-            id: 2,
-            firstName: "Jane",
-            lastName: "Smith",
-            employeeId: "0002",
-            role: "HR Manager",
-            dept: "Human Resources",
-            joiningDate: "10/03/2021",
-            gender: "Female",
-            mobile: "9876543211",
-            email: "jane.smith@company.com",
-            presentAddressLine: "456 Park Ave", presentCity: "City", presentState: "State", presentZipCode: "67890",
-            permanentAddressLine: "456 Park Ave", permanentCity: "City", permanentState: "State", permanentZipCode: "67890",
-            status: "Active",
-            aadharCard: "987654321098",
-            panCard: "FGHIJ5678K",
-            bankName: "HDFC",
-            accountNumber: "0987654321",
-            ifscCode: "HDFC0001234",
-            projects: [
-                { name: "HR Portal", status: "In Progress", role: "Manager" }
-            ],
-            leaves: {
-                total: 24, taken: 8, balance: 16, sick: 3, casual: 5, privilege: 0
-            }
-        },
-        {
-            id: 3,
-            firstName: "Michael",
-            lastName: "Johnson",
-            employeeId: "0003",
-            role: "Product Manager",
-            dept: "Product",
-            joiningDate: "20/06/2021",
-            gender: "Male",
-            mobile: "9876543212",
-            email: "michael.j@company.com",
-            presentAddressLine: "789 Broadway", presentCity: "City", presentState: "State", presentZipCode: "11223",
-            permanentAddressLine: "789 Broadway", permanentCity: "City", permanentState: "State", permanentZipCode: "11223",
-            status: "Inactive",
-            employeeType: "Contract",
-            aadharCard: "123123123123",
-            panCard: "KLMNO1234P",
-            bankName: "ICICI",
-            accountNumber: "1122334455",
-            ifscCode: "ICIC0001234",
-            projects: [
-                { name: "Gamma", status: "In Progress", role: "Owner" }
-            ],
-            leaves: {
-                total: 24, taken: 0, balance: 24, sick: 0, casual: 0, privilege: 0
-            }
+    const [employees, setEmployees] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-        },
-        {
-            id: 4,
-            firstName: "Emily",
-            lastName: "Davis",
-            employeeId: "0004",
-            role: "UX Designer",
-            dept: "Design",
-            joiningDate: "05/11/2022",
-            gender: "Female",
-            mobile: "9876543213",
-            email: "emily.davis@company.com",
-            presentAddressLine: "321 Oak Ln", presentCity: "City", presentState: "State", presentZipCode: "33445",
-            permanentAddressLine: "321 Oak Ln", permanentCity: "City", permanentState: "State", permanentZipCode: "33445",
-            status: "Active",
-            aadharCard: "456456456456",
-            panCard: "PQRST1234U",
-            bankName: "Axis",
-            accountNumber: "5566778899",
-            ifscCode: "UTIB0001234",
-            projects: [],
-            leaves: {
-                total: 24, taken: 2, balance: 22, sick: 1, casual: 1, privilege: 0
-            }
-        },
-        {
-            id: 5,
-            firstName: "David",
-            lastName: "Wilson",
-            employeeId: "0005",
-            role: "DevOps Engineer",
-            dept: "Engineering",
-            joiningDate: "12/01/2020",
-            gender: "Male",
-            mobile: "9876543214",
-            email: "david.wilson@company.com",
-            presentAddressLine: "654 Pine St", presentCity: "City", presentState: "State", presentZipCode: "55667",
-            permanentAddressLine: "654 Pine St", permanentCity: "City", permanentState: "State", permanentZipCode: "55667",
-            status: "Active",
-            employeeType: "Contract",
-            aadharCard: "789789789789",
-            panCard: "VWXYZ1234A",
-            bankName: "SBI",
-            accountNumber: "9988776655",
-            ifscCode: "SBIN0001234",
-            projects: [
-                { name: "DevOps Pipeline", status: "In Progress", role: "Lead" }
-            ],
-            leaves: {
-                total: 24, taken: 5, balance: 19, sick: 2, casual: 3, privilege: 0
-            }
-        },
-        {
-            id: 6,
-            firstName: "Sarah",
-            lastName: "Brown",
-            employeeId: "0006",
-            role: "Marketing Specialist",
-            dept: "Marketing",
-            joiningDate: "18/09/2022",
-            gender: "Female",
-            mobile: "9876543215",
-            email: "sarah.brown@company.com",
-            presentAddressLine: "987 Elm Dr", presentCity: "City", presentState: "State", presentZipCode: "77889",
-            permanentAddressLine: "987 Elm Dr", permanentCity: "City", permanentState: "State", permanentZipCode: "77889",
-            status: "Active",
-            aadharCard: "321321321321",
-            panCard: "BCDEF1234G",
-            bankName: "HDFC",
-            accountNumber: "4433221100",
-            ifscCode: "HDFC0001234",
-            projects: [],
-            leaves: {
-                total: 24, taken: 10, balance: 14, sick: 5, casual: 5, privilege: 0
-            }
-        },
-        {
-            id: 7,
-            firstName: "Robert",
-            lastName: "Taylor",
-            employeeId: "0007",
-            role: "Sales Executive",
-            dept: "Sales",
-            joiningDate: "22/04/2021",
-            gender: "Male",
-            mobile: "9876543216",
-            email: "robert.taylor@company.com",
-            presentAddressLine: "159 Maple Rd", presentCity: "City", presentState: "State", presentZipCode: "99001",
-            permanentAddressLine: "159 Maple Rd", permanentCity: "City", permanentState: "State", permanentZipCode: "99001",
-            status: "Active",
-            aadharCard: "654654654654",
-            panCard: "HIJKL1234M",
-            bankName: "ICICI",
-            accountNumber: "7788990011",
-            ifscCode: "ICIC0001234",
-            projects: [
-                { name: "Sales Dashboard", status: "Completed", role: "User" }
-            ],
-            leaves: {
-                total: 24, taken: 1, balance: 23, sick: 0, casual: 1, privilege: 0
-            }
+    const fetchEmployees = async () => {
+        try {
+            const response = await fetch("http://localhost:3000/api/users", {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            const data = await response.json();
+            
+            // Map backend fields to frontend format
+            const mappedData = data
+                .filter(u => u.role === 'EMPLOYEE' || u.role === 'HR')
+                .map(u => {
+                    const names = (u.name || "").split(" ");
+                    return {
+                        ...u,
+                        id: u._id, // Map MongoDB _id to frontend id
+                        firstName: names[0] || "",
+                        lastName: names.slice(1).join(" ") || "",
+                        employeeId: u.userId, // Map backend userId to frontend employeeId
+                    };
+                });
+
+            setEmployees(mappedData);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching employees:", error);
+            setLoading(false);
         }
-    ]);
+    };
+
+    useEffect(() => {
+        fetchEmployees();
+    }, []);
 
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [filteredEmployees, setFilteredEmployees] = useState(null);
@@ -870,15 +718,42 @@ const EmployeeDetail = () => {
         setFilteredEmployees(null);
     };
 
-    const handleSave = (data) => {
-        // Logic to save
-        if (selectedEmployee) {
-            setEmployees(prev => prev.map(e => e.id === selectedEmployee.id ? { ...data, id: e.id } : e));
-        } else {
-            setEmployees(prev => [...prev, { ...data, id: Date.now() }]);
+    const handleSave = async (data) => {
+        try {
+            if (selectedEmployee) {
+                // Update logic (to be implemented on backend)
+                setEmployees(prev => prev.map(e => e._id === selectedEmployee._id ? { ...data, _id: e._id } : e));
+            } else {
+                // Create New Employee via API
+                const response = await fetch("http://localhost:3000/api/users/create-employee", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        name: `${data.firstName} ${data.lastName}`,
+                        email: data.email,
+                        userId: data.employeeId,
+                        role: "EMPLOYEE"
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert("Employee created successfully! Email with credentials simulated in console.");
+                    fetchEmployees(); // Refresh list
+                } else {
+                    alert(result.message || "Failed to create employee");
+                }
+            }
+            setView("list");
+            setSelectedEmployee(null);
+        } catch (error) {
+            console.error("Error saving employee:", error);
+            alert("Error saving employee");
         }
-        setView("list");
-        setSelectedEmployee(null);
     };
 
     if (view === "details" && selectedEmployee) {

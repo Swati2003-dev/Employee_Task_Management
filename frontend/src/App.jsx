@@ -85,6 +85,8 @@ import Settings from './pages/Settings.jsx'
 
 
 
+import ProtectedRoute from './components/Auth/ProtectedRoute.jsx'
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -93,92 +95,97 @@ const App = () => {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
 
-        <Route path='/super-admin' element={<SuperAdminLayout />}>
-          <Route index element={<SuperAdminDashboard />} />
-          <Route path="dashboard" element={<SuperAdminDashboard />} />
-          <Route path='projects' element={<SuperAdminProjects />} />
-          <Route path='projects/:id' element={<SuperAdminProjectDetails />} />
-          <Route path='new-customers' element={<SuperAdminNewCustomersDetail />} />
-          <Route path='inquiries' element={<SuperAdminInquiriesDetail />} />
-          <Route path='earnings' element={<SuperAdminEarningsDetail />} />
-          {/* <Route path='addprojects' element={<SuperAdminAddProjects/>}/> */}
-          <Route path="client" element={<SuperAdminClientPage />} />
-          <Route path="client/:id" element={<ClientDetail />} />
-          <Route path="admin" element={<SuperAdminAdminPage />} />
-          <Route path="admin/:id" element={<AdminDetail />} />
-          <Route path='notice' element={<SuperAdminNotice />} />
-          <Route path="security" element={<SuperAdminSecurity />} />
+        {/* Super Admin Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['SUPER_ADMIN']} />}>
+          <Route path='/super-admin' element={<SuperAdminLayout />}>
+            <Route index element={<SuperAdminDashboard />} />
+            <Route path="dashboard" element={<SuperAdminDashboard />} />
+            <Route path='projects' element={<SuperAdminProjects />} />
+            <Route path='projects/:id' element={<SuperAdminProjectDetails />} />
+            <Route path='new-customers' element={<SuperAdminNewCustomersDetail />} />
+            <Route path='inquiries' element={<SuperAdminInquiriesDetail />} />
+            <Route path='earnings' element={<SuperAdminEarningsDetail />} />
+            <Route path="client" element={<SuperAdminClientPage />} />
+            <Route path="client/:id" element={<ClientDetail />} />
+            <Route path="admin" element={<SuperAdminAdminPage />} />
+            <Route path="admin/:id" element={<AdminDetail />} />
+            <Route path='notice' element={<SuperAdminNotice />} />
+            <Route path="security" element={<SuperAdminSecurity />} />
+          </Route>
         </Route>
 
-        <Route path='/admin' element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path='dashboard' element={<AdminDashboard />} />
-          <Route path='department' element={<AdminDepartment />} />
-          <Route path='employee' element={<AdminEmployee />} />
-          <Route path='holiday' element={<AdminHoliday />} />
-          <Route path='leavebalances' element={<AdminLeaveBalances />} />
-          <Route path='leaverequest' element={<AdminLeaveRequests />} />
-          <Route path='leave-types' element={<AdminLeaveTypes />} />
-          <Route path='all-employees-leave' element={<AdminLeaveDetails />} />
-          <Route path='managerleave' element={<AdminManagerLeave />} />
-          {/* <Route path='leave-setting' element={<AdminLeaveSetting />} /> */}
-          <Route path='notice' element={<AdminNotice />} />
-          {/* <Route path='adminleave' element={<AdminLeave />} /> */}
-          <Route path='project-details' element={<AdminProjectDetails />} />
-
-
-
-          <Route path='leader' element={<AdminLeader />} />
-          <Route path='today-attendance' element={<AdminTodayAttendance />} />
-          <Route path='attendance-sheet' element={<AdminEmployeeAttendanceSheet />} />
-          <Route path='employee-attendance' element={<AdminEmployeeAttendance />} />
-          <Route path='training-list' element={<AdminTrainingList />} />
-          <Route path='trainers' element={<AdminTrainers />} />
-          <Route path='training-type' element={<AdminTrainingType />} />
-          <Route path='all-trainees' element={<AdminAllTrainees />} />
-          <Route path='trainee/:id' element={<AdminTraineeDetails />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="profile" element={<AdminProfile />} />
-          <Route path="security" element={<AdminSecurity />} />
+        {/* Admin/HR Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['HR', 'SUPER_ADMIN']} />}>
+          <Route path='/admin' element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path='dashboard' element={<AdminDashboard />} />
+            <Route path='department' element={<AdminDepartment />} />
+            <Route path='employee' element={<AdminEmployee />} />
+            <Route path='holiday' element={<AdminHoliday />} />
+            <Route path='leavebalances' element={<AdminLeaveBalances />} />
+            <Route path='leaverequest' element={<AdminLeaveRequests />} />
+            <Route path='leave-types' element={<AdminLeaveTypes />} />
+            <Route path='all-employees-leave' element={<AdminLeaveDetails />} />
+            <Route path='managerleave' element={<AdminManagerLeave />} />
+            <Route path='notice' element={<AdminNotice />} />
+            <Route path='project-details' element={<AdminProjectDetails />} />
+            <Route path='leader' element={<AdminLeader />} />
+            <Route path='today-attendance' element={<AdminTodayAttendance />} />
+            <Route path='attendance-sheet' element={<AdminEmployeeAttendanceSheet />} />
+            <Route path='employee-attendance' element={<AdminEmployeeAttendance />} />
+            <Route path='training-list' element={<AdminTrainingList />} />
+            <Route path='trainers' element={<AdminTrainers />} />
+            <Route path='training-type' element={<AdminTrainingType />} />
+            <Route path='all-trainees' element={<AdminAllTrainees />} />
+            <Route path='trainee/:id' element={<AdminTraineeDetails />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="profile" element={<AdminProfile />} />
+            <Route path="security" element={<AdminSecurity />} />
+          </Route>
         </Route>
 
-        <Route path="/employee" element={<EmployeeLayout />}>
-          <Route index element={<EmployeeDashboard />} />
-          <Route path="dashboard" element={<EmployeeDashboard />} />
-          <Route path="myLeaves" element={<MyLeaves />} />
-          <Route path="leaveDetails" element={<EmployeeLeaveDetails />} />
-          <Route path="projectmanager/tasks" element={<Tasks />} />
-          <Route path='projectmanager/projects' element={<ProjectManagerAllProjects />} />
-          <Route path='projectmanager/project/:id' element={<ProjectDetailsPage />} />
-          <Route path='teamleader/addtask' element={<TeamLeaderAddTask />} />
-          <Route path='teamleader/alltasks' element={<AllTasks />} />
-          <Route path="myTasks" element={<MyTask />} />
-          <Route path="lead-issue-tracker" element={<LeadTickets />} />
-          <Route path="issue-tracker" element={<PojectManagerTickets />} />
-          <Route path="security" element={<EmployeeSecurity />} />
-          <Route path="accounts/client-payments" element={<ClientPayments />} />
-          <Route path="accounts/other-payments" element={<Expense />} />
+        {/* Employee Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['EMPLOYEE']} />}>
+          <Route path="/employee" element={<EmployeeLayout />}>
+            <Route index element={<EmployeeDashboard />} />
+            <Route path="dashboard" element={<EmployeeDashboard />} />
+            <Route path="myLeaves" element={<MyLeaves />} />
+            <Route path="leaveDetails" element={<EmployeeLeaveDetails />} />
+            <Route path="projectmanager/tasks" element={<Tasks />} />
+            <Route path='projectmanager/projects' element={<ProjectManagerAllProjects />} />
+            <Route path='projectmanager/project/:id' element={<ProjectDetailsPage />} />
+            <Route path='teamleader/addtask' element={<TeamLeaderAddTask />} />
+            <Route path='teamleader/alltasks' element={<AllTasks />} />
+            <Route path="myTasks" element={<MyTask />} />
+            <Route path="lead-issue-tracker" element={<LeadTickets />} />
+            <Route path="issue-tracker" element={<PojectManagerTickets />} />
+            <Route path="security" element={<EmployeeSecurity />} />
+            <Route path="accounts/client-payments" element={<ClientPayments />} />
+            <Route path="accounts/other-payments" element={<Expense />} />
+          </Route>
         </Route>
 
-
-        <Route path="/client" element={<ClientLayout />}>
-          <Route index element={<ClientDashboard />} />
-          <Route path="dashboard" element={<ClientDashboard />} />
-          <Route path="employees" element={<AssignedEmployees />} />
-          <Route path="projects" element={<Projects />} />
-          <Route path="projects/:id" element={<ClientProjectDetailsPage />} />
-          <Route path="supports" element={<Supports />} />
-          <Route path="supports/:id" element={<TicketDetailsPage />} />
-          <Route path="billing" element={<Billing />} />
-          <Route path="billing/:id" element={<BillingDetailsPage />} />
-          <Route path="security" element={<ClientSecurity />} />
+        {/* Client Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['CLIENT']} />}>
+          <Route path="/client" element={<ClientLayout />}>
+            <Route index element={<ClientDashboard />} />
+            <Route path="dashboard" element={<ClientDashboard />} />
+            <Route path="employees" element={<AssignedEmployees />} />
+            <Route path="projects" element={<Projects />} />
+            <Route path="projects/:id" element={<ClientProjectDetailsPage />} />
+            <Route path="supports" element={<Supports />} />
+            <Route path="supports/:id" element={<TicketDetailsPage />} />
+            <Route path="billing" element={<Billing />} />
+            <Route path="billing/:id" element={<BillingDetailsPage />} />
+            <Route path="security" element={<ClientSecurity />} />
+          </Route>
         </Route>
-
 
         <Route path="*" element={<div>404 page not found</div>} />
       </Routes>
     </BrowserRouter>
-  )
-}
+  );
+};
+
 
 export default App

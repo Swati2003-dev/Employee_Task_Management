@@ -22,7 +22,7 @@ const Sidebar = ({ isSidebarOpen = true, setIsSidebarOpen = () => { } }) => {
     { name: "My Leaves", icon: FileText, to: "/employee/myLeaves" },
     { name: "My Tasks", icon: CheckSquare, to: "/employee/myTasks" },
     // { name: "Tasks", icon: CheckSquare, to: "/employee/ProjectManagerTasks" },
-    { name: "Settings", icon: Settings, to: "/employee/settings" },
+    { name: "Security", icon: Lock, to: "/employee/security" },
     { name: "LeadTickets", icon:Ticket, to: "/employee/lead-issue-tracker" },
     { name: "ManagerTickets", icon:Ticket, to: "/employee/issue-tracker" },
     {name: "Projects" , icon:FileText, to:"/employee/projectmanager/projects"}

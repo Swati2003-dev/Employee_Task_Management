@@ -1,5 +1,6 @@
 import express from "express";
-import { signup, login } from "../controllers/auth.controller.js";
+import { signup, login, updatePassword } from "../controllers/auth.controller.js";
+import { auth } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -16,5 +17,12 @@ router.post("/signup", signup);
  * @access  Public
  */
 router.post("/login", login);
+
+/**
+ * @route   POST /api/auth/update-password
+ * @desc    Change password voluntarily
+ * @access  Protected
+ */
+router.post("/update-password", auth(), updatePassword);
 
 export default router;

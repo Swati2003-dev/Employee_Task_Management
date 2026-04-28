@@ -246,12 +246,48 @@ const initialAdmins = [
 
 const Admin = () => {
   const navigate = useNavigate();
-  const [admins, setAdmins] = useState(initialAdmins);
+  const [admins, setAdmins] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [editingAdmin, setEditingAdmin] = useState(null);
+
+  // Fetch Admins from Backend
+  const fetchAdmins = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/users", {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const data = await response.json();
+      
+      if (Array.isArray(data)) {
+        // Filter only HR/Admins for this page
+        const mappedData = data
+          .filter(u => u && u.role === 'HR')
+          .map(u => ({
+            ...u,
+            id: u._id,
+            adminId: u.userId
+          }));
+        setAdmins(mappedData);
+      } else {
+        console.error("Backend did not return an array:", data);
+        setAdmins([]);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching admins:", error);
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchAdmins();
+  }, []);
   const [formData, setFormData] = useState({
     adminId: "",
     name: "",
@@ -268,8 +304,8 @@ const Admin = () => {
 
   const filteredAdmins = admins.filter(
     (admin) => {
-      const matchesSearch = admin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        admin.email.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = (admin.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+        (admin.email?.toLowerCase() || "").includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === "All" || admin.status === statusFilter;
       return matchesSearch && matchesStatus;
     }
@@ -339,33 +375,50 @@ const Admin = () => {
     }));
   };
 
-  const handleSave = () => {
-    if (!formData.name || !formData.email || !formData.mobile) return;
-
-    if (editingAdmin) {
-      setAdmins((prev) =>
-        prev.map((a) =>
-          a.id === editingAdmin.id
-            ? {
-              ...a,
-              ...formData,
-            }
-            : a
-        )
-      );
-    } else {
-      const newId = Math.max(0, ...admins.map((a) => a.id)) + 1;
-      // const newAvatar = `https://i.pravatar.cc/150?u=admin-${newId}`;
-      setAdmins((prev) => [
-        ...prev,
-        {
-          id: newId,
-          // avatar: newAvatar,
-          ...formData,
-        },
-      ]);
+  const handleSave = async () => {
+    if (!formData.name || !formData.email || !formData.adminId) {
+      alert("Name, Email and Admin ID are required");
+      return;
     }
-    setShowModal(false);
+
+    try {
+      if (editingAdmin) {
+        // Update logic (to be implemented on backend if needed)
+        setAdmins((prev) =>
+          prev.map((a) =>
+            a._id === editingAdmin._id ? { ...a, ...formData } : a
+          )
+        );
+      } else {
+        // Create New Admin via API
+        const response = await fetch("http://localhost:3000/api/users/create-user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            userId: formData.adminId,
+            role: "HR" // In this system, HR acts as Admin
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert("Admin created successfully! Email with credentials simulated in console.");
+          fetchAdmins(); // Refresh list
+        } else {
+          alert(data.message || "Failed to create admin");
+        }
+      }
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error saving admin:", error);
+      alert("Error saving admin");
+    }
   };
 
   const handleViewDocument = (docs) => {
@@ -503,7 +556,13 @@ const Admin = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentItems.length > 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan={10} className="px-4 py-8 text-center text-slate-500 italic">
+                      Loading admins...
+                    </td>
+                  </tr>
+                ) : currentItems.length > 0 ? (
                   currentItems.map((admin) => (
                     <tr
                       key={admin.id}
@@ -516,28 +575,8 @@ const Admin = () => {
                       <td className="px-4 py-3 font-medium text-slate-800">
                         {admin.adminId}
                       </td>
-                      {/* <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={admin.avatar}
-                            alt={admin.name}
-                            className="w-9 h-9 rounded-full border border-slate-200 object-cover"
-                          />
-                          <span
-                            className="font-semibold text-slate-800 hover:text-indigo-600 transition-colors"
-                          >
-                            {admin.name}
-                          </span>
-                        </div>
-                      </td> */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          {/* <img
-                            src={admin.avatar}
-                            alt={admin.name}
-                            className="w-9 h-9 rounded-full border border-slate-200 object-cover"
-                          /> */}
-
                           <button
                             className="font-semibold text-slate-800 hover:text-indigo-600 transition-colors"
                             onClick={(e) => {
@@ -596,9 +635,9 @@ const Admin = () => {
                           <span className="text-indigo-500">
                             <MapPinIcon />
                           </span>
-                          {admin.address.length > 18
+                          {admin.address && admin.address.length > 18
                             ? admin.address.substring(0, 15) + "..."
-                            : admin.address}
+                            : admin.address || "N/A"}
                         </div>
                       </td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
